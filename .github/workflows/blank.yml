@@ -1,0 +1,33 @@
+name: Debug Shell
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install tmate
+        run: |
+          sudo apt update -y
+          sudo apt install -y tmate
+
+      - name: Start tmate session
+        run: |
+          echo "[*] Starting tmate session..."
+          # إنشاء session بصمت في الخلفية
+          tmate -S /tmp/tmate.sock new-session -d
+          
+          # انتظر حتى تصبح الجلسة جاهزة
+          tmate -S /tmp/tmate.sock wait tmate-ready
+
+          # عرض رابط SSH و Web URL
+          echo "[*] SSH command:"
+          tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'
+
+          echo "[*] Web terminal URL:"
+          tmate -S /tmp/tmate.sock display -p '#{tmate_web}'
+
+          # اجعل الجلسة مستمرة
+          tail -f /dev/null
